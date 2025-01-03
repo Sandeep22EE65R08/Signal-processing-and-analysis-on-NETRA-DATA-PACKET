@@ -1,0 +1,59 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Function to calculate skewness
+def moment_based_skew(distribution):
+    n = len(distribution)
+    mean = np.mean(distribution)
+    std = np.std(distribution)
+
+    # Divide the formula into two parts
+    first_part = n / ((n - 1) * (n - 2))
+    second_part = np.sum(((distribution - mean) / std) ** 3)
+
+    skewness = first_part * second_part
+    return skewness
+
+# Function to calculate kurtosis
+def moment_based_kurtosis(distribution):
+    n = len(distribution)
+    mean = np.mean(distribution)
+    std = np.std(distribution)
+
+    kurtosis = (1 / n) * np.sum(((distribution - mean) / std) ** 4) - 3
+    return kurtosis
+
+
+
+# Compute skewness and kurtosis
+skewness = moment_based_skew(np.abs(filtered_data))
+kurtosis_value = moment_based_kurtosis(np.abs(filtered_data))
+
+# Determine skewness type
+if skewness > 0:
+    skewness_description = "Positive Skewness"
+elif skewness < 0:
+    skewness_description = "Negative Skewness"
+else:
+    skewness_description = "Symmetrical Distribution"
+
+# Determine kurtosis type
+if kurtosis_value > 3:
+    kurtosis_description = "Leptokurtic (Sharp peak)"
+elif kurtosis_value < 3:
+    kurtosis_description = "Platykurtic (Flat peak)"
+else:
+    kurtosis_description = "Mesokurtic (Normal peak)"
+
+# Plot the KDE for the current packet
+plt.figure(figsize=(20, 6))
+
+# Use the magnitude for KDE plotting
+sns.kdeplot(np.abs(filtered_data), label="KDE", fill=True)  # KDE for magnitude
+plt.title(f"KDE plot of Packet: {skewness_description} | {kurtosis_description}")
+plt.xlabel("Amplitude")
+plt.ylabel("Density")
+plt.legend(loc='upper right')
+plt.grid(True)
+plt.show()
