@@ -1,0 +1,70 @@
+FEATURES = ['MIN', 'MAX', 'MEAN', 'RMS', 'VAR', 'STD', 'POWER', 'PEAK', 'P2P', 'CREST FACTOR', 
+            'SKEW', 'KURTOSIS', 'MAX_f', 'SUM_f', 'MEAN_f', 'VAR_f', 'PEAK_f', 'SKEW_f', 'KURTOSIS_f']
+
+def features_extraction(df): 
+    # Initialize feature lists
+    Min = []; Max = []; Mean = []; Rms = []; Var = []; Std = []; Power = []; Peak = []; Skew = []; Kurtosis = []; 
+    P2p = []; CrestFactor = []; FormFactor = []; PulseIndicator = [];
+    Max_f = []; Sum_f = []; Mean_f = []; Var_f = []; Peak_f = []; Skew_f = []; Kurtosis_f = [];
+    
+    # Extract data directly from df (assuming df is a series or array-like object containing the signal)
+    X = df.values  # Directly use the values from the dataframe
+    
+    ## TIME DOMAIN ##
+    Min.append(np.min(X))
+    Max.append(np.max(X))
+    Mean.append(np.mean(X))
+    Rms.append(np.sqrt(np.mean(X**2)))
+    Var.append(np.var(X))
+    Std.append(np.std(X))
+    Power.append(np.mean(X**2))
+    Peak.append(np.max(np.abs(X)))
+    P2p.append(np.ptp(X))  # Peak-to-Peak
+    CrestFactor.append(np.max(np.abs(X)) / np.sqrt(np.mean(X**2)))
+    Skew.append(stats.skew(X))
+    Kurtosis.append(stats.kurtosis(X))
+    FormFactor.append(np.sqrt(np.mean(X**2)) / np.mean(X))  # Form Factor
+    PulseIndicator.append(np.max(np.abs(X)) / np.mean(X))  # Pulse Indicator
+    
+    ## FREQ DOMAIN ##
+    ft = fft(X)  # Fourier transform of the signal
+    S = np.abs(ft)**2 / len(X)  # Power spectral density (normalized)
+    
+    Max_f.append(np.max(S))
+    Sum_f.append(np.sum(S))
+    Mean_f.append(np.mean(S))
+    Var_f.append(np.var(S))
+    Peak_f.append(np.max(np.abs(S)))
+    Skew_f.append(stats.skew(S))
+    Kurtosis_f.append(stats.kurtosis(S))
+    
+    # Print each feature individually
+    print("# TIME DOMAIN")
+    print(f"Minimum amplitude of the signal: {Min[0]}")
+    print(f"Maximum amplitude of the signal: {Max[0]}")
+    print(f"Mean or Average Value of signal: {Mean[0]}")
+    print(f"Root mean square of the signal: {Rms[0]}")
+    print(f"Variance of the signal's amplitude: {Var[0]}")
+    print(f"Standard Deviation of the signal's amplitude: {Std[0]}")
+    print(f"Average power of the signal: {Power[0]}")
+    print(f"Peak amplitude of the signal: {Peak[0]}")
+    print(f"Peak-to-Peak amplitude of the signal: {P2p[0]}")
+    print(f"Crest factor of the signal: {CrestFactor[0]}")
+    print(f"Skewness of the signal's amplitude distribution: {Skew[0]}")
+    print(f"Kurtosis of the signal's amplitude distribution: {Kurtosis[0]}")
+
+    print("# FREQUENCY DOMAIN")
+    print(f"Maximum frequency component power: {Max_f[0]}")
+    print(f"Total power in the frequency spectrum: {Sum_f[0]}")
+    print(f"Average power in the frequency spectrum: {Mean_f[0]}")
+    print(f"Frequency domain variance: {Var_f[0]}")
+    print(f"Peak value of the frequency spectrum.: {Peak_f[0]}")
+    print(f"Skewness of the frequency spectrum: {Skew_f[0]}")
+    print(f"Kurtosis of the frequency spectrum: {Kurtosis_f[0]}")
+
+# Example usage with signal data directly in df
+ # Example signal data (replace with your actual signal data)
+df = pd.DataFrame(np.abs(filtered_data))  # Convert to DataFrame if needed
+
+# Extract and print features
+features_extraction(df)
