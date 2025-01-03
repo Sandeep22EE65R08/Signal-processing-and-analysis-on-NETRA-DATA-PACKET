@@ -1,0 +1,71 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
+from scipy.signal import find_peaks
+
+class EnvelopeDetector:
+    def __init__(self, signal, sample_rate):
+        self.signal = signal
+        self.sample_rate = sample_rate
+
+    def Inverse_Fourrier_transform(self):
+        """
+        Assuming the signal is in the frequency domain, this method would return
+        the signal in the time domain. For now, it's just returning the original signal
+        if the data is already in the time domain.
+        """
+        # For now, returning the original signal (if already in time domain)
+        return self.signal
+
+    def Get_envelope(self):
+        """
+        Calculates the envelope of the interpolated data (upper and lower envelopes).
+        """
+        # Apply the inverse Fourier transform (if needed)
+        x_long = self.Inverse_Fourrier_transform()
+        
+        # Find peaks and troughs (local maxima and minima)
+        peaks, _ = find_peaks(x_long.squeeze(), height=0)  # Peaks (local maxima)
+        troughs, _ = find_peaks(-x_long.squeeze())         # Troughs (local minima)
+        
+        # Interpolation using cubic splines for upper and lower envelopes
+        u_p = interp1d(peaks, x_long.squeeze()[peaks], kind='cubic', bounds_error=False, fill_value=0.0)
+        l_p = interp1d(troughs, x_long.squeeze()[troughs], kind='cubic', bounds_error=False, fill_value=0.0)
+        
+        # Compute the upper and lower envelopes
+        Upper_envelope = [u_p(i) for i in range(x_long.shape[0])]
+        Lower_envelope = [l_p(i) for i in range(x_long.shape[0])]
+        
+        return peaks, troughs, Upper_envelope, Lower_envelope
+
+# Example: Assuming 'data' is already your signal loaded from a file or other source
+# For example, data could be loaded like this:
+# data = np.fromfile("/path/to/your/datafile.dat", dtype=np.float32)
+
+sample_rate = 50e6  # Example: 50 MHz sampling rate (replace with your actual sampling rate)
+# Make sure 'data' is loaded into the 'data' variable.
+
+# Initialize the EnvelopeDetector object
+detector = EnvelopeDetector(filtered_data, sample_rate)
+
+# Get the envelope (peaks, troughs, and envelopes)
+peaks, troughs, Upper_envelope, Lower_envelope = detector.Get_envelope()
+
+# Generate time axis for plotting (replace with actual time based on your signal and sample rate)
+time = np.arange(0, len(filtered_data)) / sample_rate
+
+# Plot the signal and its amplitude envelopes
+plt.figure(figsize=(20, 6))
+plt.plot(time, filtered_data, label='Signal', alpha=0.7)
+plt.plot(time[peaks], filtered_data[peaks], 'go', label='Peaks', markersize=5)  # Peaks in green
+#plt.plot(time[troughs], data[troughs], 'ro', label='Troughs', markersize=5)  # Troughs in red
+plt.plot(time, Upper_envelope, color='blue', label='Upper Envelope', linewidth=2)
+#plt.plot(time, Lower_envelope, color='orange', label='Lower Envelope', linewidth=2)
+
+# Set plot labels and title
+plt.title("Signal with Amplitude Envelopes")
+plt.xlabel("Time [s]")
+plt.ylabel("Amplitude")
+plt.legend(loc='upper right')
+plt.grid(True)
+plt.show()
