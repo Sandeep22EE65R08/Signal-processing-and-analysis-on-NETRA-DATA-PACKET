@@ -1,0 +1,12 @@
+VMIN = -150
+
+P = 50e6
+Q = 10e6
+plt.figure(figsize=(20,6))
+plt.specgram(scipy.signal.resample(filtered_data, int(len(filtered_data)*Q/P)),
+             scale='dB', Fs=Q, vmin=VMIN)
+plt.title('Resampled Spectrogram of Filtered Data', fontsize=14, fontweight='bold')
+plt.xlabel("Time (s)")
+plt.ylabel("Frequency (Hz)")
+plt.colorbar(label="Intensity (dB)")
+plt.show()
