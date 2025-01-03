@@ -1,0 +1,8 @@
+# Compute and plot spectrogram for the filtered data
+plt.figure(figsize=(20, 6))
+plt.specgram(filtered_data, Fs=fs)
+plt.title('Spectrogram of Filtered Data', fontsize=14, fontweight='bold')
+plt.xlabel("Time (s)")
+plt.ylabel("Frequency (Hz)")
+plt.colorbar(label="Intensity (dB)")
+plt.show()
