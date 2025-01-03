@@ -1,0 +1,28 @@
+def lowpass(data: np.ndarray, cutoff: float, sample_rate: float, poles: int = 12):
+    # Design the low-pass filter using Butterworth filter
+    sos = scipy.signal.butter(poles, cutoff, 'lowpass', fs=sample_rate, output='sos')
+    filtered_data = scipy.signal.sosfiltfilt(sos, data)
+    return filtered_data, sos
+
+# Apply a 4 MHz low-pass filter to the original data
+filtered_data, sos = lowpass(data, 4e6, fs)
+
+# Frequency response of the filter
+w, h = scipy.signal.sosfreqz(sos, worN=2000, fs=fs)
+
+
+# Plot the filtered signal
+plt.figure(figsize=(20, 4))
+plt.plot(time, filtered_data)
+plt.title("Filtered Data after offset correction")
+#plt.grid(alpha=.5, ls='--')
+plt.show()
+
+# Plot the frequency response of the filter
+plt.figure(figsize=(10, 4))
+plt.plot(w, np.abs(h), 'b')
+plt.title("Frequency Response of the Filter")
+plt.xlabel('Frequency [Hz]')
+plt.ylabel('Gain [dB]')
+#plt.grid(alpha=.5, ls='--')
+plt.show()
