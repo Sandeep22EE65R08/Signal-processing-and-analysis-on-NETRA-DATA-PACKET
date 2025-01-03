@@ -1,0 +1,76 @@
+import numpy as np
+from scipy.signal import welch, hamming
+
+class DroneSignalProcessor:
+    def __init__(self, debug=True):
+        self.debug = debug
+
+    @staticmethod
+    def consecutive(data, stepsize=1):
+        """Group consecutive elements based on a step size."""
+        return np.split(data, np.where(np.diff(data) != stepsize)[0] + 1)
+
+    def estimate_offset(self, y, Fs, packet_type="droneid"):
+        """Estimate the frequency offset in the signal."""
+        nfft_welch = 2048  # FFT size for PSD calculation
+
+        if len(y) < nfft_welch:
+            return None, False
+
+        # Apply Hamming window to the signal
+        window = hamming(len(y))
+        y = y * window
+
+        # Calculate Power Spectral Density (PSD)
+        f, Pxx_den = welch(y, Fs, nfft=nfft_welch, return_onesided=False)
+        Pxx_den = np.fft.fftshift(Pxx_den)
+        f = np.fft.fftshift(f)
+
+        # Add a fake DC carrier to distinguish signal components
+        Pxx_den[nfft_welch // 2 - 10:nfft_welch // 2 + 10] = 1.1 * Pxx_den.mean()
+
+        # Identify candidate frequency bands
+        candidate_bands = self.consecutive(np.where(Pxx_den > 1.1 * Pxx_den.mean())[0])
+
+        band_found = False
+        offset = 0.0
+
+        for band in candidate_bands:
+            start = band[0] - nfft_welch / 2
+            end = band[-1] - nfft_welch / 2
+            bw = (end - start) * (Fs / nfft_welch)
+            fend = start * Fs / nfft_welch
+            fstart = end * Fs / nfft_welch
+
+            if self.debug:
+                print(f"Candidate band fstart: {fstart:.2f}, fend: {fend:.2f}, bw: {bw / 1e6:.2f} MHz")
+
+            # Match candidate bands based on packet type
+            if packet_type == "droneid" and (8e6 < bw < 11e6):
+                offset = fstart - 0.5 * bw
+                band_found = True
+                break
+            elif packet_type == "c2" and (1.2e6 < bw < 1.95e6):
+                offset = fstart - 0.5 * bw
+                band_found = True
+                break
+            elif packet_type == "video" and (18e6 < bw < 22e6):
+                offset = fstart - 0.5 * bw
+                band_found = True
+                break
+
+        if self.debug:
+            print(f"Offset found: {offset / 1000:.2f} kHz")
+        return offset, band_found
+
+# Example Usage
+sampling_rate = 50e6  # 50 Msps
+processor = DroneSignalProcessor(debug=True)
+
+# Estimate the offset frequency
+offset, band_found = processor.estimate_offset(netra_data, sampling_rate, packet_type="droneid")
+
+if band_found:
+    print(f"Final Offset Frequency: {offset / 1e3:.2f} kHz")
+else:
+    print("No suitable band found.")
