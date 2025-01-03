@@ -1,0 +1,4 @@
+offset_freq = 1.94092e6  # Detected frequency offset in Hz (1.94 MHz)
+
+# Apply the frequency offset correction (compensate for the offset)
+data = netra_data * np.exp(-1j * 2 * np.pi * offset_freq * time)
