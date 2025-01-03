@@ -1,0 +1,15 @@
+# Set fft size
+N_fft = 2048
+
+# calculate fft
+netra_data_fft = np.fft.fftshift(np.fft.fft(netra_data, N_fft))
+freqs = np.fft.fftshift(np.fft.fftfreq(N_fft,1/fs))
+
+
+plt.figure(figsize=(20, 6))
+plt.plot(freqs, np.abs(netra_data_fft),color='red')
+
+plt.xlabel('Frequency, Hz')
+plt.ylabel('Magnitude')
+plt.title('Frequency spectrum of netra data before offset correction')
+plt.show()
