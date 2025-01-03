@@ -1,0 +1,14 @@
+def calculate_snr(original_signal, filtered_signal):
+    # Calculate signal power (mean squared of filtered signal)
+    signal_power = np.mean(np.abs(filtered_signal) ** 2)
+
+    # Calculate noise power (difference between original and filtered signal)
+    noise_power = np.mean((np.abs(original_signal - filtered_signal)) ** 2)
+
+    # Calculate SNR in dB
+    snr = 10 * np.log10(signal_power / noise_power)
+    return snr
+
+# Example usage
+snr_value = calculate_snr(data, filtered_data)
+print(f"SNR of filtered data: {snr_value:.2f} dB")
