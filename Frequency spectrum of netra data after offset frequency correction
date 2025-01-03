@@ -1,0 +1,15 @@
+# Set fft size
+N_fft = 2048
+
+# calculate fft
+data_fft = np.fft.fftshift(np.fft.fft(data, N_fft))
+freqs = np.fft.fftshift(np.fft.fftfreq(N_fft,1/fs))
+
+
+plt.figure(figsize=(20, 6))
+plt.plot(freqs, np.abs(data_fft))
+
+plt.xlabel('Frequency, Hz')
+plt.ylabel('Magnitude')
+plt.title('Frequency domain of Original data after offset correction')
+plt.show()
