@@ -1,0 +1,12 @@
+# calculate fft for filtered data
+filtered_data_fft = np.fft.fftshift(np.fft.fft(filtered_data, N_fft))
+freqs = np.fft.fftshift(np.fft.fftfreq(N_fft,1/fs))
+
+
+plt.figure(figsize=(20, 6))
+plt.plot(freqs, np.abs(filtered_data_fft),color='blue')
+
+plt.xlabel('Frequency, Hz')
+plt.ylabel('Magnitude')
+plt.title('Frequency spectrum of data after filtering')
+plt.show()
