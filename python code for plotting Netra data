@@ -1,0 +1,21 @@
+# Load the data from the .dat file
+samplefile = "/home/sandeep/Downloads/netra_50msps.dat" # Corrected file pathsample_bbbs_assignment_id100.dat
+
+# Step 1: Read the data
+with open(samplefile, "rb") as f:
+    netra_data = np.fromfile(f, dtype=np.complex64)
+
+
+# Step 2: Define the sampling frequency (fs)
+fs = sampling_rate= 50e6  # 50 million samples per second (50Msps) 
+# Step 3: Create a time array in seconds
+time = np.arange(0, len(netra_data)) / sampling_rate
+
+# Step 4: Plot the Original Signal with Time on x-axis
+plt.figure(figsize=(20, 8))
+plt.plot(time, netra_data, label="Original Signal", color='blue')
+plt.title("Original Signal (Amplitude vs Time)")
+plt.xlabel("Time (seconds)",fontsize=15)
+plt.ylabel("Amplitude",fontsize=15)
+plt.legend()
+plt.show()
