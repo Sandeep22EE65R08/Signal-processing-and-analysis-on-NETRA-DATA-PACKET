@@ -1,0 +1,33 @@
+# Parameters
+N = 2048  # FFT size
+fs = 50e6  # Sampling frequency
+x = data  # Your time-domain signal data
+
+# Compute the FFT
+X = np.fft.fftshift(np.fft.fft(x, N)) / N  # N-point complex DFT with fftshift
+
+# Frequency axis
+df = fs / N  # Frequency resolution
+sampleIndex = np.arange(-N // 2, N // 2)  # Ordered index for FFT plot
+f = sampleIndex * df  # X-axis in Hz
+
+# Magnitude plot
+plt.figure(figsize=(20, 6))
+
+plt.subplot(2, 1, 1)
+plt.plot(f, np.abs(X))  # Magnitude vs frequencies
+plt.xlabel('f (MHz)')
+plt.ylabel('|X(f)|')
+plt.title('Magnitude Spectrum of data')
+
+# Phase plot
+phase = np.angle(X, deg=True)  # Phase in degrees
+plt.subplot(2, 1, 2)
+plt.plot(f, phase)  # Phase vs frequencies
+plt.xlabel('f (MHz)')
+plt.ylabel('Phase (degrees)')
+plt.title('Phase Spectrum of data')
+
+# Show the plots
+plt.tight_layout()
+plt.show()
