@@ -1,0 +1,23 @@
+# Calculate phase response
+phase = np.unwrap(np.angle(h))
+
+# Calculate phase delay
+phase_delay = -phase / w
+
+# Calculate group delay
+group_delay = -np.diff(phase) / np.diff(w)
+
+# Plot the results
+plt.figure()
+plt.plot(w, phase_delay)
+plt.title('Phase Delay')
+plt.xlabel('Frequency (rad/sample)')
+plt.ylabel('Phase Delay (samples)')
+
+plt.figure()
+plt.plot(w[1:], group_delay)
+plt.title('Group Delay')
+plt.xlabel('Frequency (rad/sample)')
+plt.ylabel('Group Delay (samples)')
+
+plt.show()
